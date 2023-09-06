@@ -20,6 +20,7 @@ Widget::Widget(QWidget *parent)
     ui->startButton->setEnabled(false);
     ui->upItemButton->setEnabled(false);
     ui->downItemButton->setEnabled(false);
+    ui->dublicateButton->setEnabled(false);
 
     auto model =  ui->listWidget->model();
     connect(model, &QAbstractItemModel::rowsInserted, this, [this]{
@@ -70,7 +71,6 @@ void Widget::onMousePressed(unsigned long but, int x, int y)
 
     //SetWindowPos((HWND) winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     this->showNormal();
-    QThread::msleep(130);
     this->activateWindow();
     //SetWindowPos((HWND) winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
@@ -134,6 +134,7 @@ void Widget::onKeyPressed(std::set<DWORD> keys)
     this->actionMap.insert(item, info);
 
     ui->listWidget->addItem(item);
+    this->setEnabled(true);
 }
 
 void Widget::onHotkeyPressed(unsigned long key)
@@ -144,7 +145,7 @@ void Widget::onHotkeyPressed(unsigned long key)
 void Widget::on_keyActionButton_clicked()
 {
     MouseLogger::instance().HandleKeyboardHooks();
-
+    this->setEnabled(false);
 }
 
 void Widget::on_clickActionButton_clicked()
@@ -182,6 +183,7 @@ void Widget::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWid
         break;
     }
     ui->removeButton->setEnabled(current == nullptr ? false : true);
+    ui->dublicateButton->setEnabled(true);
 }
 
 
@@ -213,7 +215,7 @@ void Widget::on_startButton_clicked()
                 return;
             }
             auto item = actionMap[listItem];
-            QThread::msleep(defDelay);
+            //QThread::msleep(defDelay);
             switch(item.type)
             {
             case ActionType::OpenApp:
@@ -554,5 +556,14 @@ int Widget::findMaxLoopBuffer()
             max = num;
     }
     return max;
+}
+
+
+void Widget::on_dublicateButton_clicked()
+{
+    QListWidgetItem* item = new QListWidgetItem(*ui->listWidget->currentItem());
+    ActionInfo info = actionMap[ui->listWidget->currentItem()];
+    actionMap.insert(item, info);
+    ui->listWidget->addItem(item);
 }
 

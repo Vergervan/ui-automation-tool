@@ -32,10 +32,72 @@
    <string>Automation Tool</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="2">
+    <widget class="QPushButton" name="removeButton">
+     <property name="text">
+      <string>Remove</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="keyActionButton">
+     <property name="text">
+      <string>Key Press</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QPushButton" name="loopedBufferButton">
+     <property name="text">
+      <string>Looped Buffer</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="2" rowspan="2">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>77</width>
+       <height>164</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="4" column="0">
     <widget class="QPushButton" name="pasteBufferButton">
      <property name="text">
       <string>Paste Buffer</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QPushButton" name="upItemButton">
+     <property name="text">
+      <string>Up</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QPushButton" name="downItemButton">
+     <property name="text">
+      <string>Down</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="dublicateButton">
+     <property name="text">
+      <string>Dublicate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="openAppButton">
+     <property name="text">
+      <string>Open App</string>
      </property>
     </widget>
    </item>
@@ -49,68 +111,27 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="2">
+   <item row="14" column="2">
     <widget class="QPushButton" name="startButton">
      <property name="text">
       <string>Start</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="2">
-    <widget class="QPushButton" name="downItemButton">
-     <property name="text">
-      <string>Down</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QPushButton" name="upItemButton">
-     <property name="text">
-      <string>Up</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
+   <item row="14" column="0">
     <widget class="QLabel" name="currentLoopsLabel">
      <property name="text">
       <string>Loops Count: 0</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="2">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>77</width>
-       <height>164</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="1" rowspan="9">
+   <item row="0" column="1" rowspan="15">
     <widget class="QListWidget" name="listWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QPushButton" name="loopedBufferButton">
-     <property name="text">
-      <string>Looped Buffer</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="openAppButton">
-     <property name="text">
-      <string>Open App</string>
      </property>
     </widget>
    </item>
@@ -121,24 +142,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="removeButton">
-     <property name="text">
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="2">
     <widget class="QPushButton" name="editButton">
      <property name="text">
       <string>Edit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QPushButton" name="keyActionButton">
-     <property name="text">
-      <string>Key Press</string>
      </property>
     </widget>
    </item>

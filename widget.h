@@ -71,6 +71,8 @@ private slots:
 
     void on_keyActionButton_clicked();
 
+    void on_dublicateButton_clicked();
+
 private:
     Ui::Widget *ui;
     QMap<QListWidgetItem*, ActionInfo> actionMap;

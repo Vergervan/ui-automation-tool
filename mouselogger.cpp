@@ -76,7 +76,8 @@ LRESULT CALLBACK MouseLogger::mouseProc(int Code, WPARAM wParam, LPARAM lParam)
     GetCursorPos(&mousePoint);
 
     if(pMouseStruct != nullptr) {
-        switch (wParam) {
+        switch (wParam)
+        {
         case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:
         case WM_MBUTTONDOWN:
