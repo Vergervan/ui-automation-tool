@@ -75,9 +75,8 @@ void Widget::onMousePressed(unsigned long but, int x, int y)
     //SetWindowPos((HWND) winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
-void Widget::onKeyPressed(LPARAM lParam)
+void Widget::onKeyPressed(std::set<DWORD> keys)
 {
-      PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT) lParam;
 //    std::array<wchar_t, 128> buffer{};
 //    memset(buffer.data(), 0, 128);
 //    int count = ::GetKeyNameText(static_cast<LONG>(lParam), buffer.data(), static_cast<int>(buffer.size()));
@@ -94,32 +93,31 @@ void Widget::onKeyPressed(LPARAM lParam)
 //    GetKeyNameText(lParam, buffer.data(), static_cast<int>(buffer.size()));
 //    GetKeyNameTextW(lParam, buffer.data(), static_cast<int>(buffer.size()));
 
-    HKL layouts[2];
-    int hklCnt = GetKeyboardLayoutList(2, layouts);
+    //HKL layouts[2];
+    //int hklCnt = GetKeyboardLayoutList(2, layouts);
 
-    unsigned int scanCode = MapVirtualKeyEx(p->vkCode, MAPVK_VK_TO_VSC_EX, layouts[0]);
-
-    qDebug() << scanCode;
+    //unsigned int scanCode = MapVirtualKeyEx(p->vkCode, MAPVK_VK_TO_VSC_EX, layouts[0]);
 
     // because MapVirtualKey strips the extended bit for some keys
-    switch (p->vkCode)
+
+    std::stringstream ss;
+    unsigned int counter = 0;
+
+    ss << "Key press:" << (keys.size() > 1 ? "\n" : " ");
+    for(auto key : keys)
     {
-    case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN: // arrow keys
-    case VK_PRIOR: case VK_NEXT: // page up and page down
-    case VK_END: case VK_HOME:
-    case VK_INSERT: case VK_DELETE:
-    case VK_DIVIDE: // numpad slash
-    case VK_NUMLOCK:
-    {
-        scanCode |= 0x100; // set extended bit
-        break;
-    }
+        ++counter;
+        wchar_t keyName[50];
+        int cnt = GetKeyNameTextW(key << 16, keyName, sizeof(keyName));
+        char name[cnt+1];
+        for(int i = 0; i < cnt; i++)
+            name[i] = keyName[i];
+        name[cnt] = '\0';
+        ss << name;
+        if(counter != keys.size())
+            ss << " + ";
     }
 
-    wchar_t keyName[50];
-    int count = GetKeyNameText(scanCode, keyName, sizeof(keyName));
-    std::wstring ws(keyName, count+1);
-    std::string str(ws.begin(), ws.end());
 
 
 //    std::string str(buffer.begin(), buffer.end());
@@ -128,10 +126,10 @@ void Widget::onKeyPressed(LPARAM lParam)
 //    UnloadKeyboardLayout( hLocale );
 
     ActionInfo info;
-    QListWidgetItem* item = new QListWidgetItem(QString("Key press: %1").arg(str.c_str()));
+    QListWidgetItem* item = new QListWidgetItem(QString(ss.str().c_str()));
 
     info.type = ActionType::KeyPress;
-    info.code = p->vkCode;
+    info.keys = std::vector(keys.begin(), keys.end());
 
     this->actionMap.insert(item, info);
 
@@ -236,6 +234,7 @@ void Widget::on_startButton_clicked()
                 qDebug() << "Mouse click at " << item.x << ":" << item.y;
                 break;
             case ActionType::KeyPress:
+                simulateKeysPress(item.keys);
                 break;
             case ActionType::PasteBuffer:
                 sendPasteText(this->mainHwnd, item.text);
@@ -263,6 +262,26 @@ void Widget::stopLoop()
     qDebug() << "Stop loop slot called";
 }
 
+void Widget::simulateKeysPress(const std::vector<DWORD>& keys)
+{
+    std::vector<INPUT> inputs;
+    for(auto key : keys)
+    {
+        INPUT input;
+        input.type = INPUT_KEYBOARD;
+        input.ki.wScan = key;
+        inputs.emplace_back(input);
+    }
+    SendInput(inputs.size(), &inputs[0], sizeof(INPUT));
+
+    QThread::msleep(50);
+
+    for(auto input : inputs)
+        input.ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(inputs.size(), &inputs[0], sizeof(INPUT));
+}
+
 void Widget::sendPasteText(HWND wnd, QString str)
 {
     Q_UNUSED(wnd)
@@ -277,14 +296,14 @@ void Widget::sendPasteText(HWND wnd, QString str)
 
     //SendMessage(wnd, WM_PASTE, 0, 0);
 
-    HKL kbl = GetKeyboardLayout(0);
+    //HKL kbl = GetKeyboardLayout(0);
 
     INPUT inputs[2] = {};
     inputs[0].type = INPUT_KEYBOARD;
     inputs[0].ki.wVk = VK_CONTROL;
 
     inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = VkKeyScanEx('V',kbl);
+    inputs[1].ki.wVk = VkKeyScan('V');
 
     SendInput(2, inputs, sizeof(INPUT));
 

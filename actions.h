@@ -5,6 +5,7 @@
 #include <qstring.h>
 #include <QStringList>
 #include <windows.h>
+#include <vector>
 
 enum ActionType{
     MouseClick, KeyPress, PasteBuffer, OpenApp, LoopedBuffer, Delay
@@ -23,6 +24,7 @@ struct ActionInfo{
     unsigned long code;
     HandleData data;
     QStringList list;
+    std::vector<DWORD> keys;
 };
 
 #endif // ACTIONS_H

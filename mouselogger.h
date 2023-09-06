@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <windows.h>
 #include <winuser.h>
+#include <set>
 
 class MouseLogger : public QObject
 {
@@ -26,7 +27,7 @@ public:
 signals:
     // The signal, which will report the occurrence of an event
     void mousePressedEvent(unsigned long, int, int);
-    void keyPressedEvent(LPARAM);
+    void keyPressedEvent(std::set<DWORD>);
     void hotkeyPressedEvent(unsigned long);
     void mouseMovesEvent();
     void maximizeEvent();

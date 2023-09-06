@@ -86,12 +86,6 @@ LRESULT CALLBACK MouseLogger::mouseProc(int Code, WPARAM wParam, LPARAM lParam)
             emit instance().mousePressedEvent(wParam, mousePoint.x, mousePoint.y);
             UnhookWindowsHookEx(instance().mouseHook);
             break;
-//        case WM_MOUSEMOVE:
-//            qDebug() << "WM_MOUSEMOVE";
-//            break;
-//        case WM_MOUSEWHEEL:
-//            qDebug() << "WM_MOUSEWHEEL";
-//            break;
         default:
             break;
         }
@@ -106,15 +100,42 @@ LRESULT CALLBACK MouseLogger::keyboardProc(int Code, WPARAM wParam, LPARAM lPara
 {
     Q_UNUSED(Code)
 
+    static std::set<DWORD> keysDown;
+
     PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT) lParam;
 
     if(p != nullptr){
-        switch(wParam){
+        switch(wParam)
+        {
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
-            qDebug() << "Scan code: " << p->scanCode;
-            emit instance().keyPressedEvent(lParam);
-            UnhookWindowsHookEx(instance().keyboardHook);
+            switch(p->vkCode)
+            {
+            case VK_RCONTROL: case VK_RMENU:
+            case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN: // arrow keys
+            case VK_PRIOR: case VK_NEXT: // page up and page down
+            case VK_END: case VK_HOME:
+            case VK_INSERT: case VK_DELETE:
+            case VK_DIVIDE: // numpad slash
+            case VK_NUMLOCK:
+            case VK_SNAPSHOT: // print screen
+            case VK_LWIN: case VK_RWIN:
+            case VK_APPS:
+            //case VK_RETURN:
+                p->scanCode |= 0x100; // set extended bit
+            default:
+                keysDown.insert(p->scanCode);
+                break;
+            }
+            break;
+        case WM_SYSKEYUP:
+        case WM_KEYUP:
+            if(keysDown.size() > 0)
+            {
+                emit instance().keyPressedEvent(keysDown);
+                keysDown.clear();
+                UnhookWindowsHookEx(instance().keyboardHook);
+            }
             break;
         }
     }

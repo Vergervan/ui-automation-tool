@@ -15,7 +15,9 @@
 #include "chooseappwidget.h"
 #include "loopedbufferwidget.h"
 #include "actions.h"
-#include <QKeyEvent>
+#include <set>
+#include <string>
+#include <sstream>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -36,13 +38,14 @@ public:
     unsigned long getMouseInputUp(unsigned long);
 private slots:
     void onMousePressed(unsigned long, int, int);
-    void onKeyPressed(LPARAM);
+    void onKeyPressed(std::set<DWORD>);
     void onHotkeyPressed(unsigned long);
     void getEditText(QListWidgetItem*, ActionType, QString);
     void getProcessInfo(QListWidgetItem*, HandleData);
     void getLoopedBufferList(QListWidgetItem*, QStringList);
     void stopLoop();
     void updateLoopCount(int x);
+    void simulateKeysPress(const std::vector<DWORD>& keys);
 
     void on_clickActionButton_clicked();
 
