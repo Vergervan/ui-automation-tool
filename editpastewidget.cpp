@@ -28,6 +28,7 @@ void EditPasteWidget::save()
             return;
         }
     }
+    ui->textEdit->setStyleSheet("QLineEdit {color: black;}");
     emit editTextEvent(this->item, this->type, ui->textEdit->text());
     this->close();
 }

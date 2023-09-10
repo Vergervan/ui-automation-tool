@@ -21,11 +21,13 @@ Widget::Widget(QWidget *parent)
     ui->upItemButton->setEnabled(false);
     ui->downItemButton->setEnabled(false);
     ui->dublicateButton->setEnabled(false);
+    ui->loopsEdit->setPlaceholderText("Set loops count");
 
     auto model =  ui->listWidget->model();
     connect(model, &QAbstractItemModel::rowsInserted, this, [this]{
         if(loopBuffers.size() == 0)
-            updateLoopCount(1);
+            if(!forceLoop)
+                updateLoopCount(1);
         ui->removeButton->setEnabled(true);
         ui->startButton->setEnabled(true);
         if(ui->listWidget->count() >= 2)
@@ -37,7 +39,8 @@ Widget::Widget(QWidget *parent)
     connect(model, &QAbstractItemModel::rowsRemoved, this, [this]{
         if(ui->listWidget->count() == 0)
         {
-            updateLoopCount(0);
+            if(!forceLoop)
+                updateLoopCount(0);
             ui->removeButton->setEnabled(false);
             ui->startButton->setEnabled(false);
         }
@@ -160,7 +163,8 @@ void Widget::on_removeButton_clicked()
     if(data.type == ActionType::LoopedBuffer)
     {
         removeFromLoopBuffers(data.list.count());
-        updateLoopCount(findMaxLoopBuffer());
+        if(!forceLoop)
+            updateLoopCount(findMaxLoopBuffer());
     }
     actionMap.remove(ui->listWidget->currentItem());
     delete ui->listWidget->currentItem();
@@ -442,7 +446,7 @@ void Widget::getLoopedBufferList(QListWidgetItem* item, QStringList list)
 //    qDebug() << "Looped buffers count: " << loopBuffers.size();
 //    qDebug() << "Prepare to update loop count: " << loopCount << " " << list.count();
 //    updateLoopCount(findMaxLoopBuffer());
-    if(loopCount < list.count())
+    if(loopCount < list.count() && !forceLoop)
         updateLoopCount(list.count());
 }
 
@@ -565,5 +569,34 @@ void Widget::on_dublicateButton_clicked()
     ActionInfo info = actionMap[ui->listWidget->currentItem()];
     actionMap.insert(item, info);
     ui->listWidget->addItem(item);
+}
+
+
+void Widget::on_loopsEdit_textChanged(const QString &arg1)
+{
+
+}
+
+
+void Widget::on_loopsEdit_returnPressed()
+{
+    if(ui->loopsEdit->text().isEmpty())
+    {
+        forceLoop = false;
+        updateLoopCount(findMaxLoopBuffer());
+        return;
+    }
+
+    bool ok;
+    int num = ui->loopsEdit->text().toInt(&ok);
+
+    if(!ok)
+    {
+        ui->loopsEdit->setStyleSheet("QLineEdit {color: red;}");
+        return;
+    }
+    ui->loopsEdit->setStyleSheet("QLineEdit {color: black;}");
+    forceLoop = true;
+    updateLoopCount(num);
 }
 

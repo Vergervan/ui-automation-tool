@@ -73,12 +73,17 @@ private slots:
 
     void on_dublicateButton_clicked();
 
+    void on_loopsEdit_textChanged(const QString &arg1);
+
+    void on_loopsEdit_returnPressed();
+
 private:
     Ui::Widget *ui;
     QMap<QListWidgetItem*, ActionInfo> actionMap;
     std::vector<int> loopBuffers;
     HWND mainHwnd = 0;
     bool isStopLoop = false;
+    bool forceLoop = false;
     int loopCount = 0;
 
     void removeFromLoopBuffers(int x);
